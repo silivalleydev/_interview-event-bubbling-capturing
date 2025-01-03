@@ -1,70 +1,126 @@
-# Getting Started with Create React App
+# Event Deligation
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+1. 이벤트 위임 (Event Delegation)
+#### 개념
+- 이벤트 위임은 자식 요소마다 개별적으로 이벤트 리스너를 등록하지 않고, 부모 요소에 이벤트 리스너를 등록하여 자식 요소에서 발생한 이벤트를 처리하는 기법입니다.
+- 이벤트 버블링을 활용해 구현되며, 동적으로 추가된 자식 요소도 이벤트를 처리할 수 있습니다.
 
-## Available Scripts
+#### 특징
+- 효율적: 자식 요소마다 이벤트를 붙이는 대신, 부모 요소에만 이벤트 리스너를 등록.
+- 유연성: 동적으로 추가된 자식 요소도 처리 가능.
 
-In the project directory, you can run:
+```js
+import React from "react";
 
-### `npm start`
+function EventDelegationExample() {
+  const handleClick = (event) => {
+    console.log(`Clicked element: ${event.target.tagName}`);
+    if (event.target.tagName === "BUTTON") {
+      console.log(`Button clicked: ${event.target.textContent}`);
+    }
+  };
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+  return (
+    <div onClick={handleClick}>
+      <button>Button 1</button>
+      <button>Button 2</button>
+      <p>Paragraph</p>
+    </div>
+  );
+}
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+export default EventDelegationExample;
+```
 
-### `npm test`
+### 설명
+`<div>`에 이벤트 리스너를 등록하고, 클릭된 요소(event.target)를 확인.
+버튼 클릭 시 부모가 이를 처리하고 버튼 정보를 출력.
+동적으로 추가된 `<button>`도 자동으로 처리 가능.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2. 이벤트 버블링 (Event Bubbling)
+#### 개념
+- 이벤트 버블링은 이벤트가 가장 안쪽의 요소(이벤트 발생 요소)에서 시작해 상위 요소로 전파되는 과정입니다.
+- React에서는 기본적으로 이벤트가 버블링 단계에서 처리됩니다.
 
-### `npm run build`
+#### 특징
+- 기본적으로 DOM 이벤트는 버블링이 활성화되어 있음.
+- event.stopPropagation()으로 버블링을 중단할 수 있음.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```js
+import React from "react";
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+function EventBubblingExample() {
+  const handleParentClick = () => {
+    console.log("Parent clicked");
+  };
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  const handleChildClick = (event) => {
+    console.log("Child clicked");
+    // event.stopPropagation(); // 주석 해제하면 버블링 중단
+  };
 
-### `npm run eject`
+  return (
+    <div onClick={handleParentClick}>
+      <button onClick={handleChildClick}>Click Me</button>
+    </div>
+  );
+}
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+export default EventBubblingExample;
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### 설명
+- 버튼 클릭 시:
+    - handleChildClick이 실행되고,
+    - 버블링 단계에서 handleParentClick이 실행.
+- event.stopPropagation()을 사용하면 부모의 이벤트는 실행되지 않음.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+3. 이벤트 캡처링 (Event Capturing)
+#### 개념
+- 이벤트 캡처링은 이벤트가 상위 요소에서 시작해 가장 안쪽의 요소로 전달되는 과정입니다.
+- React에서 onClickCapture 같은 캡처링 전용 핸들러를 사용해 처리.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+#### 특징
+- 기본적으로 DOM 이벤트는 캡처링을 지원하지만, React는 캡처링 대신 버블링을 기본으로 사용.
+- addEventListener의 세 번째 인자로 true를 전달하거나 React의 onClickCapture를 사용해 캡처링 단계에서 이벤트 처리 가능.
 
-## Learn More
+```js
+import React from "react";
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+function EventCapturingExample() {
+  const handleParentCapture = () => {
+    console.log("Parent capturing");
+  };
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+  const handleChildCapture = () => {
+    console.log("Child capturing");
+  };
 
-### Code Splitting
+  const handleParentBubble = () => {
+    console.log("Parent bubbling");
+  };
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+  const handleChildBubble = () => {
+    console.log("Child bubbling");
+  };
 
-### Analyzing the Bundle Size
+  return (
+    <div onClickCapture={handleParentCapture} onClick={handleParentBubble}>
+      <button
+        onClickCapture={handleChildCapture}
+        onClick={handleChildBubble}
+      >
+        Click Me
+      </button>
+    </div>
+  );
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+export default EventCapturingExample;
+```
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+#### 설명
+- 클릭 순서:
+    - 캡처링 단계: Parent capturing → Child capturing
+    - 버블링 단계: Child bubbling → Parent bubbling
+- React의 onClickCapture는 캡처링 단계에서 이벤트를 처리.
