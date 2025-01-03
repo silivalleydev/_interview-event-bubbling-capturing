@@ -1,4 +1,4 @@
-# Event Deligation
+# 이벤트 위임, 버블링, 캡쳐링
 
 1. 이벤트 위임 (Event Delegation)
 #### 개념
